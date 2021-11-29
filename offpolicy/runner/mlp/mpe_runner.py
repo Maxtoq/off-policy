@@ -97,10 +97,7 @@ class MPERunner(MlpRunner):
             episode_rewards.append(rewards)
             dones_env = np.all(dones, axis=1)
 
-            if explore and n_rollout_threads == 1 and np.all(dones_env):
-                next_obs = env.reset()
-
-            if not explore and np.all(dones_env):
+            if np.all(dones_env):
                 average_episode_rewards = np.mean(np.sum(episode_rewards, axis=0))
                 env_info['average_episode_rewards'] = average_episode_rewards
                 return env_info
