@@ -128,7 +128,7 @@ class World(object):
         self.damping = 0.25
         # contact response parameters
         self.contact_force = 1e+2
-        self.contact_margin = 1e-3
+        self.contact_margin = 1e-4
         # cache distances between all agents (not calculated by default)
         self.cache_dists = False
         self.cached_dist_vect = None
@@ -308,8 +308,11 @@ class World(object):
             dist_min = entity_a.size + entity_b.size
         # softmax penetration
         k = self.contact_margin
+        if np.isnan(dist):
+            print(entity_a.state.p_pos, entity_b.state.p_pos)
+            exit(1)
         penetration = np.logaddexp(0, -(dist - dist_min)/k)*k
-        force = self.contact_force * delta_pos / dist * penetration
+        force = self.contact_force * delta_pos / (dist + 1e-6) * penetration
         if entity_a.movable and entity_b.movable:
             # consider mass in collisions
             force_ratio = entity_b.mass / entity_a.mass
