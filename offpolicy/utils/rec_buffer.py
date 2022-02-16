@@ -147,7 +147,7 @@ class RecPolicyBuffer(object):
         """
         Insert a set of episodes corresponding to this policy into buffer. If the buffer size overflows, old transitions are dropped.
 
-        :param num_insert_steps: (int) number of transitions to be added to buffer
+        :param num_insert_episodes: (int) number of episodes to be added to buffer
         :param obs: (np.ndarray) observations of agents corresponding to this policy.
         :param share_obs: (np.ndarray) centralized observations of agents corresponding to this policy.
         :param acts: (np.ndarray) actions of agents corresponding to this policy.
@@ -163,11 +163,12 @@ class RecPolicyBuffer(object):
         # obs: [step, episode, agent, dim]
         episode_length = acts.shape[0]
         assert episode_length == self.episode_length, ("different dimension!")
+        number_insert_steps = num_insert_episodes * episode_length
 
-        if self.current_i + num_insert_episodes <= self.buffer_size:
-            idx_range = np.arange(self.current_i, self.current_i + num_insert_episodes)
+        if self.current_i + number_insert_steps <= self.buffer_size:
+            idx_range = np.arange(self.current_i, self.current_i + number_insert_steps)
         else:
-            num_left_episodes = self.current_i + num_insert_episodes - self.buffer_size
+            num_left_episodes = self.current_i + number_insert_steps - self.buffer_size
             idx_range = np.concatenate((np.arange(self.current_i, self.buffer_size), np.arange(num_left_episodes)))
 
         if self.use_same_share_obs:
